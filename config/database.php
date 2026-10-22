@@ -6,13 +6,16 @@ function getDbConnection() {
 
     if ($pdo === null) {
         try {
-            $host     = '127.0.0.1';
-            $port     = '3306';
-            $dbname   = 'ecommerce_kacamata'; // Sesuaikan dengan nama database MySQL lokal kamu
-            $user     = 'root';
-            $password = '';
+            // Membaca kredensial dari Environment Variables (Back4app/Lokal)
+            // Jika tidak ada di env, fallback ke nilai default Supabase
+            $host     = getenv('DB_HOST') ?: 'aws-0-ap-southeast-1.pooler.supabase.com';
+            $port     = getenv('DB_PORT') ?: '5432';
+            $dbname   = getenv('DB_DATABASE') ?: 'postgres';
+            $user     = getenv('DB_USERNAME') ?: 'postgres.anaulwirhpttgpxyezyd';
+            $password = getenv('DB_PASSWORD') ?: 'idvisionstore123';
 
-            $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
+            // Menggunakan DSN PostgreSQL (pgsql)
+            $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
 
             $pdo = new PDO($dsn, $user, $password, [
                 PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
