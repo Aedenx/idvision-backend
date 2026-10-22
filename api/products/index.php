@@ -3,15 +3,25 @@
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: GET");
+header("Access-Control-Allow-Methods: GET, OPTIONS");
 
-require_once '../../config/database.php';
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+require_once __DIR__ . '/../../config/database.php';
 
 $pdo = getDbConnection();
 
 // Tangkap parameter query
 $slug = isset($_GET['slug']) ? trim($_GET['slug']) : null;
 $id   = isset($_GET['id']) ? (int)$_GET['id'] : null;
+
+// Base URL gambar otomatis mengikuti domain server (Back4app/Lokal)
+$scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";
+$host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$baseUrl = getenv('NEXT_PUBLIC_STORAGE_URL') ?: "$scheme://$host/uploads/products/";
 
 try {
     if (!empty($slug) || !empty($id)) {
@@ -95,8 +105,7 @@ try {
         $stmtImg->execute(['pid' => $product['product_id']]);
         $img = $stmtImg->fetch(PDO::FETCH_ASSOC);
 
-        $baseUrl = "http://" . $_SERVER['HTTP_HOST'] . "/idvision/backend/uploads/products/";
-        $product['image_url'] = ($img && !empty($img['image_path'])) ? $baseUrl . $img['image_path'] : null;
+        $product['image_url'] = ($img && !empty($img['image_path'])) ? rtrim($baseUrl, '/') . '/' . ltrim($img['image_path'], '/') : null;
 
         echo json_encode([
             "status" => "success",
@@ -113,7 +122,7 @@ try {
         $params = [];
         $sqlWhere = "WHERE p.is_active = 1";
 
-        // Filter Kategori (Gunakan dua nama parameter terpisah agar PDO binding presisi)
+        // Filter Kategori
         if (!empty($catInput) && strtolower($catInput) !== 'all') {
             $sqlWhere .= " AND (LOWER(c.slug) = LOWER(:cat_slug) OR LOWER(c.name) = LOWER(:cat_name))";
             $params['cat_slug'] = $catInput;
@@ -175,9 +184,8 @@ try {
         $stmt->execute($params);
         $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $baseUrl = "http://" . $_SERVER['HTTP_HOST'] . "/idvision/backend/uploads/products/";
         foreach ($products as &$p) {
-            $p['image_url'] = !empty($p['image_path']) ? $baseUrl . $p['image_path'] : null;
+            $p['image_url'] = !empty($p['image_path']) ? rtrim($baseUrl, '/') . '/' . ltrim($p['image_path'], '/') : null;
             $p['average_rating'] = floatval($p['average_rating']);
             $p['total_reviews']  = intval($p['total_reviews']);
         }
