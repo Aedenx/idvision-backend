@@ -7,15 +7,15 @@ function getDbConnection() {
     if ($pdo === null) {
         try {
             // Membaca kredensial dari Environment Variables (Back4app/Lokal)
-            // Jika tidak ada di env, fallback ke nilai default Supabase
+            // Menggunakan Pooler Supabase (IPv4 compatible) & Port 6543
             $host     = getenv('DB_HOST') ?: 'aws-0-ap-southeast-1.pooler.supabase.com';
-            $port     = getenv('DB_PORT') ?: '5432';
+            $port     = getenv('DB_PORT') ?: '6543';
             $dbname   = getenv('DB_DATABASE') ?: 'postgres';
             $user     = getenv('DB_USERNAME') ?: 'postgres.anaulwirhpttgpxyezyd';
             $password = getenv('DB_PASSWORD') ?: 'idvisionstore123';
 
-            // Menggunakan DSN PostgreSQL (pgsql)
-            $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
+            // DSN PostgreSQL dengan DSN Pooler IPv4 & sslmode=require
+            $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;sslmode=require";
 
             $pdo = new PDO($dsn, $user, $password, [
                 PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
