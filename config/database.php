@@ -9,9 +9,10 @@ function getDbConnection() {
             $host     = getenv('DB_HOST') ?: 'aws-0-ap-southeast-1.pooler.supabase.com';
             $port     = getenv('DB_PORT') ?: '5432';
             $dbname   = getenv('DB_DATABASE') ?: 'postgres';
-            $user     = getenv('DB_USERNAME') ?: 'postgres.anaulwirhpttgpxyezyd';
+            $user     = getenv('DB_USERNAME') ?: 'postgres';
             $password = getenv('DB_PASSWORD') ?: 'idvisionstore123';
 
+            // DSN pgsql dengan penanganan SSL Supabase
             $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;sslmode=require";
 
             $pdo = new PDO($dsn, $user, $password, [
