@@ -6,12 +6,11 @@ function getDbConnection() {
 
     if ($pdo === null) {
         try {
-            // Menggunakan host region aws-0-ap-south-1 dan port 5432 sesuai Supabase kamu
-            $host     = getenv('DB_HOST') ?: 'aws-0-ap-south-1.pooler.supabase.com';
-            $port     = getenv('DB_PORT') ?: '5432';
-            $dbname   = getenv('DB_DATABASE') ?: 'postgres';
-            $user     = getenv('DB_USERNAME') ?: 'postgres.anaulwirhpttgpxyezyd';
-            $password = getenv('DB_PASSWORD') ?: 'idvisionstore123';
+$host     = getenv('DB_HOST') ?: 'aws-0-ap-northeast-1.pooler.supabase.com';
+$port     = getenv('DB_PORT') ?: '5432';
+$dbname   = getenv('DB_NAME') ?: 'postgres';         // Ubah dari DB_DATABASE ke DB_NAME
+$user     = getenv('DB_USER') ?: 'postgres.pikxqcmqxhfxeqanozix'; // Ubah dari DB_USERNAME dan sesuaikan user baru
+$password = getenv('DB_PASSWORD') ?: 'idvisionstore123';
 
             $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;sslmode=require";
 
